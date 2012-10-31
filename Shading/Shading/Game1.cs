@@ -75,7 +75,7 @@ namespace Shading
 
         private void setupGaussianBlur(float sigma)
         {
-            // Look up the sample weight and offset effect parameters.
+            // Look up the sample weight effect parameters.
             EffectParameter weightsParameter;
             weightsParameter = gaussianEffect.Parameters["SampleWeights"];
 
