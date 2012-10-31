@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shading", "Shading\Shading\Shading.csproj", "{E5952182-A815-4400-AD19-4D65A9E20B0D}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "ShadingContent", "Shading\ShadingContent\ShadingContent.contentproj", "{B588AAB6-1443-4CAA-8109-E6DC6D3DFAEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Xbox 360 = Debug|Xbox 360
+		Release|Xbox 360 = Release|Xbox 360
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Debug|Xbox 360.Deploy.0 = Debug|Xbox 360
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Release|Xbox 360.Build.0 = Release|Xbox 360
+		{E5952182-A815-4400-AD19-4D65A9E20B0D}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
+		{B588AAB6-1443-4CAA-8109-E6DC6D3DFAEF}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
+		{B588AAB6-1443-4CAA-8109-E6DC6D3DFAEF}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
