@@ -24,6 +24,8 @@ namespace Shading
         RenderTarget2D tempTarget1, tempTarget2;
         float sig = 12;
 
+        Renderer renderer;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -71,6 +73,9 @@ namespace Shading
                                               false,
                                               SurfaceFormat.Color,
                                               DepthFormat.None);
+
+            renderer = new Renderer(Content, GraphicsDevice, spriteBatch);
+            renderer.AddModel(cathedral);
         }
 
         private void setupGaussianBlur(float sigma)
@@ -151,7 +156,9 @@ namespace Shading
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(normalTarget);
+            renderer.Render(gameTime, cam);
+
+            /*GraphicsDevice.SetRenderTarget(normalTarget);
             GraphicsDevice.Clear(Color.Transparent);
 
             float elapsed = (float)gameTime.TotalGameTime.TotalSeconds;
@@ -193,7 +200,7 @@ namespace Shading
             spriteBatch.End();
 
             GraphicsDevice.BlendState = BlendState.Opaque;
-            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;*/
 
             base.Draw(gameTime);
         }

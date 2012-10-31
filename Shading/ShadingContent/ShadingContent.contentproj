@@ -50,14 +50,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\fuck.fbx">
-      <Name>fuck</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-      <ProcessorParameters_ResizeTexturesToPowerOfTwo>True</ProcessorParameters_ResizeTexturesToPowerOfTwo>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\lol.png">
       <Name>lol</Name>
       <Importer>TextureImporter</Importer>
