@@ -19,6 +19,14 @@ namespace Shading
 
         private Effect drawNormalsEffect;
 
+        public PostProcessor PostProcessor
+        {
+            get
+            {
+                return postProcessor;
+            }
+        }
+
         public Renderer(ContentManager content, GraphicsDevice device, SpriteBatch batch)
         {
             this.content = content;
@@ -77,11 +85,11 @@ namespace Shading
 
         public void Render(GameTime g, Camera cam)
         {
-            device.SetRenderTarget(colorTarget);
-            device.Clear(Color.Transparent);
-
             float dt = (float)g.ElapsedGameTime.TotalSeconds;
             float elapsed = (float)g.TotalGameTime.TotalSeconds;
+
+            device.SetRenderTarget(colorTarget);
+            device.Clear(Color.Transparent);
 
             device.BlendState = BlendState.Opaque;
             device.DepthStencilState = DepthStencilState.Default;
@@ -103,9 +111,11 @@ namespace Shading
                 }
             }
 
+            Texture2D result = postProcessor.Process(colorTarget, colorTarget, depthTarget, normalTarget);
+
             device.SetRenderTarget(null);
             device.Clear(Color.White);
-            postProcessor.DrawFullScreenQuad(colorTarget);
+            postProcessor.DrawFullScreenQuad(result);
         }
     }
 }
