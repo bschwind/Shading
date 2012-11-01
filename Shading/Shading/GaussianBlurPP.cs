@@ -73,18 +73,23 @@ namespace Shading
             gaussianEffect.Parameters["dy"].SetValue(1f / processor.Device.Viewport.Height);
         }
 
-        public override Texture2D Process(Texture2D image, Texture2D color, Texture2D depth, Texture2D normal, RenderTarget2D temp1, RenderTarget2D temp2)
+        public override Texture2D Process(Texture2D image, Texture2D color, Texture2D depth, Texture2D normal)
         {
-            processor.Device.SetRenderTarget(temp1);
+            //Blur horizontally
+            //processor.Device.SetRenderTarget(temp1);
+            processor.SwapTargets();
             gaussianEffect.CurrentTechnique = gaussianEffect.Techniques["HorizontalGaussianBlur"];
             processor.DrawFullScreenQuad(image, gaussianEffect);
 
             //Blur vertically
-            processor.Device.SetRenderTarget(temp2);
+            //processor.Device.SetRenderTarget(temp2);
+            processor.SwapTargets();
             gaussianEffect.CurrentTechnique = gaussianEffect.Techniques["VerticalGaussianBlur"];
-            processor.DrawFullScreenQuad(temp1, gaussianEffect);
+            processor.DrawFullScreenQuad(processor.GetResults(), gaussianEffect);
 
-            return temp2;
+            processor.SwapTargets();
+
+            return processor.GetResults();
         }
 
         private static float computeGaussian(float n, float sigma)

@@ -92,6 +92,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="GaussianBlurPP.cs" />
+    <Compile Include="NegatizePP.cs" />
     <Compile Include="PostProcessor.cs" />
     <Compile Include="PPEffect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

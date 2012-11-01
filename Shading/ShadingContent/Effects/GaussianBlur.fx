@@ -1,6 +1,6 @@
 sampler TextureSampler : register(s0);
 
-#define SAMPLE_COUNT 20
+#define SAMPLE_COUNT 10
 
 float dx, dy;
 float SampleWeights[SAMPLE_COUNT];

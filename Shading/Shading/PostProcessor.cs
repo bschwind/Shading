@@ -11,6 +11,7 @@ namespace Shading
     public class PostProcessor
     {
         private RenderTarget2D target1, target2;
+        private RenderTarget2D availableTarget;
         private GraphicsDevice device;
         private SpriteBatch spriteBatch;
         private ContentManager content;
@@ -40,6 +41,14 @@ namespace Shading
             }
         }
 
+        public RenderTarget2D AvailableTarget
+        {
+            get
+            {
+                return availableTarget;
+            }
+        }
+
         public PostProcessor(ContentManager content, GraphicsDevice device, SpriteBatch batch)
         {
             this.content = content;
@@ -49,6 +58,7 @@ namespace Shading
             ppEffects = new List<PPEffect>();
 
             CreateRenderTargets();
+            availableTarget = target1;
         }
 
         private void CreateRenderTargets()
@@ -87,13 +97,32 @@ namespace Shading
             spriteBatch.End();
         }
 
+        public void SwapTargets()
+        {
+            if (availableTarget.Equals(target1))
+            {
+                device.SetRenderTarget(target1);
+                availableTarget = target2;
+            }
+            else
+            {
+                device.SetRenderTarget(target2);
+                availableTarget = target1;
+            }
+        }
+
+        public RenderTarget2D GetResults()
+        {
+            return availableTarget;
+        }
+
         public Texture2D Process(Texture2D image, Texture2D color, Texture2D depth, Texture2D normal)
         {
             Texture2D currentResult = image;
 
             foreach (PPEffect p in ppEffects)
             {
-                currentResult = p.Process(currentResult, color, depth, normal, target1, target2);
+                currentResult = p.Process(currentResult, color, depth, normal);
             }
 
             return currentResult;

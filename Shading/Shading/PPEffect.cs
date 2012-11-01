@@ -20,9 +20,7 @@ namespace Shading
         public virtual Texture2D Process(Texture2D image,
                                          Texture2D color,
                                          Texture2D depth,
-                                         Texture2D normal,
-                                         RenderTarget2D temp1,
-                                         RenderTarget2D temp2)
+                                         Texture2D normal)
         {
             return image;
         }
