@@ -118,32 +118,19 @@ namespace Shading
                 }
             }
 
-            //Texture2D result = postProcessor.Process(depthTarget, colorTarget, depthTarget, normalTarget);
+            //Texture2D result = postProcessor.Process(normalTarget, colorTarget, depthTarget, normalTarget);
 
             device.SetRenderTarget(null);
             device.Clear(Color.White);
 
+            //PostProcessor.DrawFullScreenQuad(result);
+
             ssaoEffect.Parameters["frustumCorners"].SetValue(frustum.GetCorners());
             ssaoEffect.Parameters["depthMap"].SetValue(depthTarget);
             ssaoEffect.Parameters["normalMap"].SetValue(normalTarget);
-            ssaoEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)device.PresentationParameters.BackBufferWidth, 0.5f / (float)device.PresentationParameters.BackBufferHeight));
-            ssaoEffect.CurrentTechnique.Passes[0].Apply();
-            PostProcessor.DrawFullScreenQuad();
-
-            /*float[] data = new float[depthTarget.Width * depthTarget.Height];
-            depthTarget.GetData<float>(data);
-            System.Diagnostics.Debug.WriteLine(data.Average());*/
-
-            //PostProcessor.DrawFullScreenQuad(depthTarget, ssaoEffect);
-
-            float halfWidth = device.Viewport.Width / 2;
-            float halfHeight = device.Viewport.Height / 2;
-
-            /*spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null);
-            spriteBatch.Draw(colorTarget, new Rectangle(0, 0, (int)halfWidth, (int)halfHeight), Color.White);
-            spriteBatch.Draw(depthTarget, new Rectangle((int)halfWidth, 0, (int)halfWidth, (int)halfHeight), Color.White);
-            spriteBatch.Draw(normalTarget, new Rectangle(0, (int)halfHeight, (int)halfWidth, (int)halfHeight), Color.White);
-            spriteBatch.End();*/
+            ssaoEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)device.PresentationParameters.BackBufferWidth, 
+                                                        0.5f / (float)device.PresentationParameters.BackBufferHeight));
+            PostProcessor.DrawFullScreenQuad(ssaoEffect);
         }
     }
 }

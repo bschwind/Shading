@@ -16,6 +16,7 @@ namespace Shading
         private SpriteBatch spriteBatch;
         private ContentManager content;
         private List<PPEffect> ppEffects;
+        private Effect drawImageEffect;
 
         //Screen-aligned quad code
         VertexBuffer quadVerts;
@@ -56,6 +57,14 @@ namespace Shading
             CreateRenderTargets();
             availableTarget = target1;
             SetupScreenAlignedQuad();
+            SetupDrawImageEffect();
+        }
+
+        private void SetupDrawImageEffect()
+        {
+            drawImageEffect = content.Load<Effect>("Effects/DrawImage");
+            drawImageEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)device.PresentationParameters.BackBufferWidth,
+                                                        0.5f / (float)device.PresentationParameters.BackBufferHeight));
         }
 
         private void SetupScreenAlignedQuad()
@@ -114,18 +123,17 @@ namespace Shading
             device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
         }
 
-        public void DrawFullScreenQuad(Texture2D tex, Effect effect)
+        public void DrawFullScreenQuad(Effect effect)
         {
-            spriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp, null, null, effect);
-            spriteBatch.Draw(tex, new Rectangle(0, 0, device.Viewport.Width, device.Viewport.Height), Color.White);
-            spriteBatch.End();
+            effect.CurrentTechnique.Passes[0].Apply();
+            DrawFullScreenQuad();
         }
 
         public void DrawFullScreenQuad(Texture2D tex)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null);
-            spriteBatch.Draw(tex, new Rectangle(0, 0, device.Viewport.Width, device.Viewport.Height), Color.White);
-            spriteBatch.End();
+            drawImageEffect.Parameters["tex"].SetValue(tex);
+            drawImageEffect.CurrentTechnique.Passes[0].Apply();
+            DrawFullScreenQuad();
         }
 
         public void SwapTargets()

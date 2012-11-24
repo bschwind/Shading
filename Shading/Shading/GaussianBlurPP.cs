@@ -71,6 +71,8 @@ namespace Shading
             weightsParameter.SetValue(sampleWeights);
             gaussianEffect.Parameters["dx"].SetValue(1f / processor.Device.Viewport.Width);
             gaussianEffect.Parameters["dy"].SetValue(1f / processor.Device.Viewport.Height);
+            gaussianEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)processor.Device.PresentationParameters.BackBufferWidth,
+                                                            0.5f / (float)processor.Device.PresentationParameters.BackBufferHeight));
         }
 
         public override Texture2D Process(Texture2D image, Texture2D color, Texture2D depth, Texture2D normal)
@@ -79,13 +81,15 @@ namespace Shading
             //processor.Device.SetRenderTarget(temp1);
             processor.SwapTargets();
             gaussianEffect.CurrentTechnique = gaussianEffect.Techniques["HorizontalGaussianBlur"];
-            processor.DrawFullScreenQuad(image, gaussianEffect);
+            gaussianEffect.Parameters["tex"].SetValue(image);
+            processor.DrawFullScreenQuad(gaussianEffect);
 
             //Blur vertically
             //processor.Device.SetRenderTarget(temp2);
             processor.SwapTargets();
             gaussianEffect.CurrentTechnique = gaussianEffect.Techniques["VerticalGaussianBlur"];
-            processor.DrawFullScreenQuad(processor.GetResults(), gaussianEffect);
+            gaussianEffect.Parameters["tex"].SetValue(processor.GetResults());
+            processor.DrawFullScreenQuad(gaussianEffect);
 
             processor.SwapTargets();
 

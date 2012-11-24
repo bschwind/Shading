@@ -1,10 +1,21 @@
-sampler TextureSampler : register(s0);
+#include <HelperFunctions.fxh>
+
+texture tex;
+
+sampler TextureSampler = sampler_state
+{
+    Texture = (tex);
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    MagFilter = LINEAR;
+    MinFilter = LINEAR;
+    Mipfilter = LINEAR;
+};
 
 #define SAMPLE_COUNT 10
 
 float dx, dy;
 float SampleWeights[SAMPLE_COUNT];
-
 
 float4 HorizontalBlur(float2 texCoord : TEXCOORD0) : COLOR0
 {
@@ -50,6 +61,7 @@ technique HorizontalGaussianBlur
 {
     pass Pass1
     {
+		VertexShader = compile vs_2_0 PostProcessVS();
         PixelShader = compile ps_2_0 HorizontalBlur();
     }
 }
@@ -58,6 +70,7 @@ technique VerticalGaussianBlur
 {
     pass Pass1
     {
+		VertexShader = compile vs_2_0 PostProcessVS();
         PixelShader = compile ps_2_0 VerticalBlur();
     }
 }

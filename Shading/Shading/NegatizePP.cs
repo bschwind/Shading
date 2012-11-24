@@ -16,11 +16,14 @@ namespace Shading
             : base(processor)
         {
             negatizeEffect = processor.Content.Load<Effect>("Effects/Negatize");
+            negatizeEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)processor.Device.PresentationParameters.BackBufferWidth,
+                                                            0.5f / (float)processor.Device.PresentationParameters.BackBufferHeight));
         }
 
         public override Texture2D Process(Texture2D image, Texture2D color, Texture2D depth, Texture2D normal)
         {
-            processor.DrawFullScreenQuad(image, negatizeEffect);
+            negatizeEffect.Parameters["tex"].SetValue(image);
+            processor.DrawFullScreenQuad(negatizeEffect);
             processor.SwapTargets();
 
             return processor.GetResults();

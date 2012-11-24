@@ -14,14 +14,7 @@ sampler TextureSampler = sampler_state
 
 float4 Negatize(float2 texCoord : TEXCOORD0) : COLOR0
 {
-    float4 c = 0;
-    
-	c = tex2D(TextureSampler, texCoord);
-	float a = c.a;
-	
-	c = 1-c;
-	c.a = a;
-	return c;
+	return tex2D(TextureSampler, texCoord);
 }
 
 technique Negatize
