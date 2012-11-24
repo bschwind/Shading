@@ -25,7 +25,7 @@ namespace Shading
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferWidth = 720;
+            graphics.PreferredBackBufferHeight = 720;
             graphics.PreferMultiSampling = true;
             Content.RootDirectory = "Content";
         }
@@ -47,7 +47,6 @@ namespace Shading
             renderer.AddModel(cathedral);
             gaussian = new GaussianBlurPP(renderer.PostProcessor, sigma);
             renderer.PostProcessor.AddPPEffect(gaussian);
-            renderer.PostProcessor.AddPPEffect(new NegatizeEffect(renderer.PostProcessor));
         }
 
         private void replaceModelEffect(Model model, Effect effect)

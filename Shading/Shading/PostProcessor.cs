@@ -17,6 +17,10 @@ namespace Shading
         private ContentManager content;
         private List<PPEffect> ppEffects;
 
+        //Screen-aligned quad code
+        VertexBuffer quadVerts;
+        IndexBuffer quadIndices;
+
         public ContentManager Content
         {
             get
@@ -41,14 +45,6 @@ namespace Shading
             }
         }
 
-        public RenderTarget2D AvailableTarget
-        {
-            get
-            {
-                return availableTarget;
-            }
-        }
-
         public PostProcessor(ContentManager content, GraphicsDevice device, SpriteBatch batch)
         {
             this.content = content;
@@ -59,6 +55,34 @@ namespace Shading
 
             CreateRenderTargets();
             availableTarget = target1;
+            SetupScreenAlignedQuad();
+        }
+
+        private void SetupScreenAlignedQuad()
+        {
+            VertexPositionTexture[] verts = new VertexPositionTexture[]
+                        {
+                            new VertexPositionTexture(
+                                new Vector3(-1,1,0),
+                                new Vector2(0,0)),
+                            new VertexPositionTexture(
+                                new Vector3(1,1,0),
+                                new Vector2(1,0)),
+                            new VertexPositionTexture(
+                                new Vector3(1,-1,0),
+                                new Vector2(1,1)),
+                            new VertexPositionTexture(
+                                new Vector3(-1,-1,0),
+                                new Vector2(0,1))
+                        };
+
+            short[] indices = new short[] { 0, 1, 3, 3, 1, 2 };
+
+            quadVerts = new VertexBuffer(device, typeof(VertexPositionTexture), 4, BufferUsage.None);
+            quadVerts.SetData<VertexPositionTexture>(verts);
+
+            quadIndices = new IndexBuffer(device, IndexElementSize.SixteenBits, 6, BufferUsage.None);
+            quadIndices.SetData<short>(indices);
         }
 
         private void CreateRenderTargets()
@@ -83,16 +107,23 @@ namespace Shading
             ppEffects.Add(p);
         }
 
+        public void DrawFullScreenQuad()
+        {
+            device.SetVertexBuffer(quadVerts);
+            device.Indices = quadIndices;
+            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);
+        }
+
         public void DrawFullScreenQuad(Texture2D tex, Effect effect)
         {
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, effect);
+            spriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp, null, null, effect);
             spriteBatch.Draw(tex, new Rectangle(0, 0, device.Viewport.Width, device.Viewport.Height), Color.White);
             spriteBatch.End();
         }
 
         public void DrawFullScreenQuad(Texture2D tex)
         {
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null);
             spriteBatch.Draw(tex, new Rectangle(0, 0, device.Viewport.Width, device.Viewport.Height), Color.White);
             spriteBatch.End();
         }
