@@ -43,6 +43,18 @@ namespace Shading
             drawNormalsEffect = content.Load<Effect>("Effects/RenderNormals");
             renderGBufferEffect = content.Load<Effect>("Effects/RenderGBuffer");
             ssaoEffect = content.Load<Effect>("Effects/SSAO");
+
+            int sampleCount = ssaoEffect.Parameters["Samples"].Elements.Count;
+            Vector3[] samples = new Vector3[sampleCount];
+            Random rand = new Random();
+
+            for (int i = 0; i < sampleCount; i++)
+            {
+                samples[i] = new Vector3((float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble());
+                samples[i] = Vector3.Normalize(samples[i]);
+            }
+
+            ssaoEffect.Parameters["Samples"].SetValue(samples);
         }
 
         private void CreateRenderTargets()

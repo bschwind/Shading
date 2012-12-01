@@ -41,7 +41,7 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 	PixelShaderOutput output;
 
 	output.Color = float4(0.5, 0.5, 0.5, 1);
-    output.Normal = float4(input.Normal.rgb, 1);
+    output.Normal = float4((input.Normal.rgb + 1)/2, 1);
 	output.Depth = input.Depth;
 
 	float3 pos = PositionFromDepth(output.Depth, float2(0, 0));
