@@ -6,10 +6,11 @@ float4x4 Projection;
 
 texture depthMap;
 texture normalMap;
+texture noiseMap;
 
 #define SAMPLE_COUNT 16
 float3 Samples[SAMPLE_COUNT];
-float radius = 1.0;
+float radius = 0.1;
 
 sampler DepthSampler = sampler_state
 {
@@ -31,13 +32,24 @@ sampler NormalSampler = sampler_state
     Mipfilter = POINT;
 };
 
+sampler NoiseSampler = sampler_state
+{
+    Texture = (noiseMap);
+    AddressU = WRAP;
+    AddressV = WRAP;
+    MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;
+};
+
 float4 PixelShaderFunction(PostProcessVSOutput input) : COLOR0
 {
     float depth = tex2D(DepthSampler, input.TexCoord);
 	float3 normal = 2 * tex2D(NormalSampler, input.TexCoord) - 1;
 	float3 pos = PositionFromDepth(depth, input.TexCoord);
 
-	float3 tangent = normalize(float3(1, 2, -2));
+	float3 rvec = tex2D(NoiseSampler, input.TexCoord * 10).xyz * 2.0 - 1.0;
+	float3 tangent = normalize(rvec-normal * dot(rvec, normal));
 	float3 bitangent = cross(normal, tangent);
 	float3x3 tbn = float3x3(tangent, bitangent, normal);
 
@@ -51,13 +63,13 @@ float4 PixelShaderFunction(PostProcessVSOutput input) : COLOR0
 		offset.xy /= offset.w;
 		offset.xy = offset.xy * 0.5 + 0.5;
 
-		float sampleDepth = tex2D(depthMap, offset.xy).r;
+		float sampleDepth = tex2D(DepthSampler, offset.xy).r;
 
 		float rangeCheck = abs(pos.z - sampleDepth) < radius ? 1.0 : 0.0;
 		occlusion += (sampleDepth <= samplePos.z ? 1.0 : 0.0) * rangeCheck;
 	}
 
-	occlusion = 1.0 - (occlusion / SAMPLE-COUNT);
+	occlusion = 1.0 - (occlusion / SAMPLE_COUNT);
 
 	return float4(occlusion, occlusion, occlusion, 1);
 }

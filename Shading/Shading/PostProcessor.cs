@@ -118,6 +118,7 @@ namespace Shading
 
         public void DrawFullScreenQuad()
         {
+            device.DepthStencilState = DepthStencilState.None;
             device.SetVertexBuffer(quadVerts);
             device.Indices = quadIndices;
             device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 4, 0, 2);

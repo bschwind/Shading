@@ -19,6 +19,7 @@ namespace Shading
 
         private Effect drawNormalsEffect;
         private Effect renderGBufferEffect;
+        private Effect clearGBufferEffect;
         private Effect ssaoEffect;
 
         public PostProcessor PostProcessor
@@ -42,8 +43,20 @@ namespace Shading
 
             drawNormalsEffect = content.Load<Effect>("Effects/RenderNormals");
             renderGBufferEffect = content.Load<Effect>("Effects/RenderGBuffer");
+            clearGBufferEffect = content.Load<Effect>("Effects/ClearGBuffer");
             ssaoEffect = content.Load<Effect>("Effects/SSAO");
 
+            SetupSSAOEffect();
+            SetupSSAOEffect();
+        }
+
+        private void SetupClearGBufferEffect()
+        {
+            clearGBufferEffect.Parameters["farplane"].SetValue(10);
+        }
+
+        private void SetupSSAOEffect()
+        {
             int sampleCount = ssaoEffect.Parameters["Samples"].Elements.Count;
             Vector3[] samples = new Vector3[sampleCount];
             Random rand = new Random();
@@ -55,6 +68,19 @@ namespace Shading
             }
 
             ssaoEffect.Parameters["Samples"].SetValue(samples);
+
+            int randomTexSize = 4;
+            Texture2D randTex = new Texture2D(device, randomTexSize, randomTexSize);
+            Color[] colors = new Color[randomTexSize * randomTexSize];
+
+            for (int i = 0; i < randomTexSize * randomTexSize; i++)
+            {
+                colors[i] = new Color(new Vector3((float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble() * 2 - 1, 0));
+            }
+
+            randTex.SetData<Color>(colors);
+
+            ssaoEffect.Parameters["noiseMap"].SetValue(randTex);
         }
 
         private void CreateRenderTargets()
@@ -105,7 +131,7 @@ namespace Shading
             float elapsed = (float)g.TotalGameTime.TotalSeconds;
 
             device.SetRenderTargets(colorTarget, normalTarget, depthTarget);
-            device.Clear(Color.Transparent);
+            postProcessor.DrawFullScreenQuad(clearGBufferEffect);
 
             device.BlendState = BlendState.Opaque;
             device.DepthStencilState = DepthStencilState.Default;
