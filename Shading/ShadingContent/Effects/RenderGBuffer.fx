@@ -12,9 +12,9 @@ struct VertexShaderInput
 
 struct VertexShaderOutput
 {
-    float4 PositionOut : POSITION0;
-	float3 Normal      : NORMAL0;
-	float Depth       : TEXCOORD0;
+    float4 PositionOut  : POSITION0;
+	float3 Normal       : NORMAL0;
+	float3 ViewSpacePos : TEXCOORD0;
 };
 
 struct PixelShaderOutput
@@ -31,8 +31,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View);
     output.PositionOut = mul(viewPosition, Projection);
-	output.Normal = mul(input.Normal, World);
-	output.Depth = (-viewPosition.z - nearPlane) / (farPlane - nearPlane);
+	output.ViewSpacePos = viewPosition;
+	output.Normal = mul(mul(input.Normal, (float3x3)World),(float3x3)View);
     return output;
 }
 
@@ -41,10 +41,8 @@ PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 	PixelShaderOutput output;
 
 	output.Color = float4(0.5, 0.5, 0.5, 1);
-    output.Normal = float4((input.Normal.rgb + 1)/2, 1);
-	output.Depth = input.Depth;
-
-	float3 pos = PositionFromDepth(output.Depth, float2(0, 0));
+    output.Normal = float4((input.Normal.rgb + 1) * 0.5, 0);
+	output.Depth = float4(-input.ViewSpacePos.z / farPlane, 1, 1, 1);
 
 	return output;
 }

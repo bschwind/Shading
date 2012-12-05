@@ -22,6 +22,9 @@ namespace Shading
         private Effect clearGBufferEffect;
         private Effect ssaoEffect;
 
+        private Texture2D NoiseMap;
+        public float radius = 2;
+
         public PostProcessor PostProcessor
         {
             get
@@ -65,22 +68,24 @@ namespace Shading
             {
                 samples[i] = new Vector3((float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble());
                 samples[i] = Vector3.Normalize(samples[i]);
+                samples[i] *= (float)rand.NextDouble();
+                /*float scale = (float)i / (float)sampleCount;
+                scale = MathHelper.Lerp(0.1f, 1.0f, scale * scale);
+                samples[i] *= scale;*/
             }
 
             ssaoEffect.Parameters["Samples"].SetValue(samples);
 
-            int randomTexSize = 4;
-            Texture2D randTex = new Texture2D(device, randomTexSize, randomTexSize);
+            int randomTexSize = 32;
+            NoiseMap = new Texture2D(device, randomTexSize, randomTexSize);
             Color[] colors = new Color[randomTexSize * randomTexSize];
 
             for (int i = 0; i < randomTexSize * randomTexSize; i++)
             {
-                colors[i] = new Color(new Vector3((float)rand.NextDouble() * 2 - 1, (float)rand.NextDouble() * 2 - 1, 0));
+                colors[i] = new Color(new Vector3((float)rand.NextDouble(), (float)rand.NextDouble(), 0));
             }
 
-            randTex.SetData<Color>(colors);
-
-            ssaoEffect.Parameters["noiseMap"].SetValue(randTex);
+            NoiseMap.SetData<Color>(colors);
         }
 
         private void CreateRenderTargets()
@@ -131,13 +136,14 @@ namespace Shading
             float elapsed = (float)g.TotalGameTime.TotalSeconds;
 
             device.SetRenderTargets(colorTarget, normalTarget, depthTarget);
+            clearGBufferEffect.Parameters["farplane"].SetValue(cam.FarPlane);
             postProcessor.DrawFullScreenQuad(clearGBufferEffect);
-
+            
             device.BlendState = BlendState.Opaque;
             device.DepthStencilState = DepthStencilState.Default;
 
             BoundingFrustum frustum = new BoundingFrustum(cam.View * cam.Projection);
-            renderGBufferEffect.Parameters["frustumCorners"].SetValue(frustum.GetCorners());
+            //renderGBufferEffect.Parameters["frustumCorners"].SetValue(frustum.GetCorners());
 
             foreach (Model m in models)
             {
@@ -158,17 +164,45 @@ namespace Shading
 
             //Texture2D result = postProcessor.Process(normalTarget, colorTarget, depthTarget, normalTarget);
 
-            device.SetRenderTarget(null);
-            device.Clear(Color.White);
+            device.SetRenderTarget(colorTarget);
+            device.Clear(Color.Red);
 
-            //PostProcessor.DrawFullScreenQuad(result);
+            //PostProcessor.DrawFullScreenQuad(depthTarget);
+            Vector3[] corners = frustum.GetCorners();
+            Vector3[] farCorners = new Vector3[4];
+            for (int i = 0; i < corners.Length; i++)
+            {
+                corners[i] = Vector3.Transform(corners[i], cam.View);
+            }
 
-            ssaoEffect.Parameters["frustumCorners"].SetValue(frustum.GetCorners());
+            for (int i = 0; i < 4; i++)
+            {
+                farCorners[i] = corners[i + 4] - corners[i];
+            }
+
+            ssaoEffect.Parameters["frustumCorners"].SetValue(farCorners);
             ssaoEffect.Parameters["depthMap"].SetValue(depthTarget);
             ssaoEffect.Parameters["normalMap"].SetValue(normalTarget);
+            ssaoEffect.Parameters["noiseMap"].SetValue(NoiseMap);
             ssaoEffect.Parameters["halfPixel"].SetValue(new Vector2(0.5f / (float)device.PresentationParameters.BackBufferWidth, 
                                                         0.5f / (float)device.PresentationParameters.BackBufferHeight));
+            ssaoEffect.Parameters["Projection"].SetValue(cam.Projection);
+            ssaoEffect.Parameters["invProjection"].SetValue(Matrix.Invert(cam.Projection));
+            Matrix tempView = cam.View;
+            tempView.M41 = 0;
+            tempView.M42 = 0;
+            tempView.M43 = 0;
+            tempView.M44 = 0;
+            ssaoEffect.Parameters["View"].SetValue(tempView);
+            ssaoEffect.Parameters["radius"].SetValue(radius);
+
             PostProcessor.DrawFullScreenQuad(ssaoEffect);
+
+            Texture2D result = postProcessor.Process(colorTarget, colorTarget, depthTarget, normalTarget);
+
+            device.SetRenderTarget(null);
+            device.Clear(Color.Red);
+            postProcessor.DrawFullScreenQuad(result);
         }
     }
 }

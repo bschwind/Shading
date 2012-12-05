@@ -47,6 +47,22 @@ namespace Shading
             }
         }
 
+        public float NearPlane
+        {
+            get
+            {
+                return nearPlane;
+            }
+        }
+
+        public float FarPlane
+        {
+            get
+            {
+                return farPlane;
+            }
+        }
+
         /// <summary>
         /// Creates a new first person camera, centered at the origin, looking down the negative Z axis.
         /// </summary>

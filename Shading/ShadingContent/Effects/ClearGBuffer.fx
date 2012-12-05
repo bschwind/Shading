@@ -14,8 +14,8 @@ PixelShaderOutput PixelShaderFunction()
 	PixelShaderOutput output;
 
 	output.Color = float4(0, 0, 0, 0);
-    output.Normal = float4(0.5, 0.5, 0.5, 1);
-	output.Depth = farplane;
+    output.Normal = float4(0.5, 0.5, 0.5, 0);
+	output.Depth = 1;
 
 	return output;
 }

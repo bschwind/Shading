@@ -80,6 +80,9 @@ namespace Shading
             sigma -= padState.Triggers.Left;
             sigma = MathHelper.Clamp(sigma, 0.5f, 100);
 
+            renderer.radius += padState.ThumbSticks.Right.X * 0.1f;
+            renderer.radius = MathHelper.Clamp(renderer.radius, 0.01f, 10);
+
             gaussian.Sigma = sigma;
 
             base.Update(gameTime);
